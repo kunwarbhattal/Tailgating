@@ -1,4 +1,4 @@
 opencv-python==4.8.1.78
-google-cloud-vision==3.4.4
+google-generativeai==0.3.2
 python-dotenv==1.0.0
 requests==2.31.0 
