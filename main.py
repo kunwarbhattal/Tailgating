@@ -27,7 +27,7 @@ def analyze_image_with_gemini(image_base64):
     genai.configure(api_key=GEMINI_API_KEY)
     
     # Create the model
-    model = genai.GenerativeModel('gemini-pro-vision')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     
     # Prepare the image data
     image_data = {
