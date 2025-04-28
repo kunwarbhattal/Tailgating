@@ -41,6 +41,8 @@ def analyze_image_with_gemini(image_base64):
 
 def main():
     print("Starting video stream processing...")
+    print("Press 's' to analyze current frame")
+    print("Press 'q' to quit")
     
     # Initialize video stream
     cap = cv2.VideoCapture(VIDEO_URL)
@@ -52,22 +54,28 @@ def main():
             # Capture frame
             frame = capture_frame(cap)
             
-            # Save frame
-            image_path = save_frame(frame)
+            # Display the frame
+            cv2.imshow('Video Feed', frame)
             
-            # Convert to base64
-            image_base64 = encode_image_to_base64(image_path)
+            # Wait for key press
+            key = cv2.waitKey(1) & 0xFF
             
-            # Analyze with Gemini
-            print("\nProcessing new frame...")
-            analysis_results = analyze_image_with_gemini(image_base64)
+            # If 's' is pressed, analyze the current frame
+            if key == ord('s'):
+                print("\nAnalyzing current frame...")
+                # Save current frame
+                image_path = save_frame(frame)
+                # Convert to base64
+                image_base64 = encode_image_to_base64(image_path)
+                # Analyze with Gemini
+                analysis_results = analyze_image_with_gemini(image_base64)
+                # Display results
+                print("\nAnalysis Results:")
+                print(analysis_results)
             
-            # Display results
-            print("\nAnalysis Results:")
-            print(analysis_results)
-            
-            # Wait for the specified interval
-            time.sleep(CAPTURE_INTERVAL_SECONDS)
+            # If 'q' is pressed, break the loop
+            elif key == ord('q'):
+                break
             
     except KeyboardInterrupt:
         print("\nStopping stream processing...")
