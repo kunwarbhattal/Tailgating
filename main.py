@@ -2,13 +2,13 @@ import cv2
 import time
 import base64
 import google.generativeai as genai
-from config import VIDEO_URL, CAPTURE_INTERVAL_SECONDS, GEMINI_API_KEY, LLM_QUESTION
+from config import RTSP_URL, CAPTURE_INTERVAL_SECONDS, GEMINI_API_KEY, LLM_QUESTION
 
 def capture_frame(cap):
-    """Capture a single frame from the video stream"""
+    """Capture a single frame from the RTSP stream"""
     ret, frame = cap.read()
     if not ret:
-        raise Exception("Failed to capture frame from video stream")
+        raise Exception("Failed to capture frame from RTSP stream")
     return frame
 
 def save_frame(frame, filename="temp_frame.jpg"):
@@ -40,34 +40,45 @@ def analyze_image_with_gemini(image_base64):
     return response.text
 
 def main():
-    print("Starting video stream processing...")
+    print("Starting RTSP stream processing...")
+    print("Press 's' to analyze current frame")
+    print("Press 'q' to quit")
     
-    # Initialize video stream
-    cap = cv2.VideoCapture(VIDEO_URL)
+    # Initialize RTSP stream
+    cap = cv2.VideoCapture(RTSP_URL)
     if not cap.isOpened():
-        raise Exception("Failed to open video stream")
+        raise Exception("Failed to open RTSP stream")
     
     try:
         while True:
             # Capture frame
-            frame = capture_frame(cap)
+            ret, frame = cap.read()
+            if not ret:
+                print("Failed to grab frame")
+                continue
             
-            # Save frame
-            image_path = save_frame(frame)
+            # Display the frame
+            cv2.imshow('RTSP Feed', frame)
             
-            # Convert to base64
-            image_base64 = encode_image_to_base64(image_path)
+            # Wait for key press (1ms delay to allow window to update)
+            key = cv2.waitKey(1) & 0xFF
             
-            # Analyze with Gemini
-            print("\nProcessing new frame...")
-            analysis_results = analyze_image_with_gemini(image_base64)
+            # If 's' is pressed, analyze the current frame
+            if key == ord('s'):
+                print("\nAnalyzing current frame...")
+                # Save current frame
+                image_path = save_frame(frame)
+                # Convert to base64
+                image_base64 = encode_image_to_base64(image_path)
+                # Analyze with Gemini
+                analysis_results = analyze_image_with_gemini(image_base64)
+                # Display results
+                print("\nAnalysis Results:")
+                print(analysis_results)
             
-            # Display results
-            print("\nAnalysis Results:")
-            print(analysis_results)
-            
-            # Wait for the specified interval
-            time.sleep(CAPTURE_INTERVAL_SECONDS)
+            # If 'q' is pressed, break the loop
+            elif key == ord('q'):
+                break
             
     except KeyboardInterrupt:
         print("\nStopping stream processing...")
