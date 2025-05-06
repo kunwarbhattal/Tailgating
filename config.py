@@ -1,5 +1,6 @@
 # Video Stream Configuration
-VIDEO_URL = "http://admin:admin@partap-singh.local:8081/video"  # Replace with your HTTP video URL
+# VIDEO_URL = "http://admin:admin@partap-singh.local:8081/video"  # Replace with your HTTP video URL
+VIDEO_URL = "http://partap-singh.local:8081/video"
 
 # Image Capture Configuration
 CAPTURE_INTERVAL_SECONDS = 5  # Capture image every 5 seconds
